@@ -1,22 +1,34 @@
 ﻿$(document).ready(function(){
 
-	$("#btn_entrar").click(function(){
-
-		window.location.href='sistema/listar_plantao.php'
-	});
-
-
-	$('#modalPlantao').on('show.bs.modal', function (event) {
-	  var button = $(event.relatedTarget) // Button that triggered the modal
-	  var recipient = button.data('whatever') // Extract info from data-* attributes
-	  // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
-	  // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
-	  var modal = $(this)
-	  modal.find('.modal-title').text('New message to ' + recipient)
-	  modal.find('.modal-body input').val(recipient)
-	})
+	
+	$("#matricula_login").mask('0.000.000-0', {reverse: true});
 
 
 	
 
+	
 });
+
+
+function logar(){
+
+	var matricula = $("#matricula_login").val();
+
+	$.post("sistema/login.php",
+    {
+        matricula_login: matricula
+    },
+    function(data, status){
+
+    	if(data != false){    		
+    		 window.location.href="sistema/listar_plantao.php";
+    	}else{
+    		$('#myModal').modal('show');
+    	}
+
+       
+    });
+
+
+
+}

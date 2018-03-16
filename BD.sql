@@ -43,12 +43,8 @@ CREATE TABLE saegnew.colaboradores (
 	matricula VARCHAR(8) NOT NULL ,
 	nome VARCHAR(150) NOT NULL , 
 	lotacao VARCHAR(50) NOT NULL ,
-	mcu VARCHAR(8) NOT NULL, 
-	cargo VARCHAR(30) NOT NULL,
-	especialidade VARCHAR(30) DEFAULT NULL,
 	funcao VARCHAR(30) DEFAULT NULL,
 	telefone VARCHAR(9) DEFAULT NULL ,
-	senha VARCHAR(32) DEFAULT NULL,
 	status BOOLEAN NOT NULL DEFAULT 1 , 
 	PRIMARY KEY (id_colaborador),
 	UNIQUE (matricula)) 

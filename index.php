@@ -11,8 +11,14 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <link rel="stylesheet" href="css/style.css" rel="stylesheet">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.0/jquery.mask.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>  
   <script src="js/script.js"></script>
+  <script>
+    $(document).ready(){
+      $('#myModal').modal('hide');
+    }
+  </script>
 
     <!-- Custom styles for this template -->
     <link href="css/signin.css" rel="stylesheet">
@@ -26,20 +32,35 @@
       <h2 class="h2 mb-3 font-weight-normal">SAEG</h2>      
       <h3 class="h3 mb-3 font-weight-normal">Sistema de Apoio às Atividades Extras da GEOPE/BSB</h3>
       <hr>
-      <label for="matricula" class="sr-only">Matrícula</label>
-      <input type="text" id="matricula" class="form-control" placeholder="Informe a sua Matrícula" required autofocus>
+      <label for="matricula_login" class="sr-only">Matrícula</label>
+      <input type="text" id="matricula_login" name="matricula_login" class="form-control" placeholder="Informe a sua Matrícula" required autofocus>
       <hr>
+      <div id="myModal" class="modal" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3 class="modal-title">Matrícula Inválida</h3>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p>A matrícula informada não foi encontrada.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">OK</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
       <!--
       <label for="senha" class="sr-only">Senha</label>
       <input type="password" id="senha" class="form-control" placeholder="Senha" required>
+      <button id="btn_entrar" onclick="return logar();" class="btn btn-lg btn-primary btn-block" type="submit">ENTRAR</button>
       -->
-      <hr>
-      <button id="btn_entrar" class="btn btn-lg btn-primary btn-block" type="submit">ENTRAR</button>
-      <br>
-      <!--
-      <hr>
-      <a href="sistema/cadastrar_colaborador.php" class="h4 alert alert-secondary">Clique aqui para cadastrar-se.</a>
-      -->
+      <a href="#" onclick="javascript: logar();" class="btn btn-lg btn-primary btn-block">ENTRAR</a>
+      
       <hr>
       <p class="mt-5 mb-3 text-muted">GEOPE SE/BSB</p>
     </form>
