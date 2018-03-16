@@ -26,7 +26,17 @@ class login extends conecta{
 		$query = conecta::executarSQL($sql, $dados);
 		$resultado = $query->fetchAll(PDO::FETCH_OBJ);
 		$quant = $query->rowCount();		
-		if($quant == 1){				
+		if($quant == 1){
+
+			foreach ($resultado as $row) {
+				session_start();
+				$_SESSION['matricula'] = $row->matricula;
+				$_SESSION['nome'] = $row->nome;
+				$_SESSION['lotacao'] = $row->lotacao;
+				$_SESSION['funcao'] = $row->funcao;
+				$_SESSION['time'] = date('Y-m-d H:i:s');
+			}
+									
 			//return $resultado;			
 			return $quant;
 		}else{

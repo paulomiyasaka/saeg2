@@ -13,7 +13,7 @@ new auto_load();
 		$usuario = $login->logar();
 		
 		if($usuario){
-			var_dump($usuario);			
+			var_dump($usuario);	
 		}else{			
 			return false;
 		}		

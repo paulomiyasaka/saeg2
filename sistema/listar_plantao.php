@@ -1,6 +1,20 @@
 ﻿<?php
 $titulo = "Listar Plantões";
 include_once '../head.php';
+session_start();
+if(isset($_SESSION['time'])){
+	$t_log = strtotime($_SESSION['time']);
+	$t_now = time();
+	echo "<script> alert(LOG: $t_log NOW: $t_now); </script>";
+	if($t_now - $t_log > 3600){
+		session_destroy();
+		session_unset();
+		echo "<script>window.location.href='../index.php'</script>";
+	}
+
+}else{
+	echo "<script>window.location.href='../index.php'</script>";
+}	
 ?>
 
   <body>
@@ -10,7 +24,8 @@ include_once '../head.php';
       <nav class="navbar navbar-dark bg-dark">			
 
 				<h2 class="text-white">SAEG - Sistema de Apoio às Atividades Extras -  GEOPE SE/BSB</h2>
-			  
+			  	<h5 class="text-white " id="nome_usuario"><?php echo $_SESSION['nome'];?> <a href="logout.php" class="btn btn-outline-warning btn-sm border border-warning" id="logout"> Sair </a></h5>
+
 			</nav>
   
 
@@ -48,6 +63,38 @@ include_once '../head.php';
 		?>
 
 	</div>
+
+
+
+
+	<!-- MODAL PARA CONFIRMAR INSCRIÇÃO -->
+
+
+		<!-- Modal -->
+		<div class="modal fade" id="modalInscrever" tabindex="-1" role="dialog" aria-labelledby="modalInscreverTitle" aria-hidden="true">
+		  <div class="modal-dialog modal-dialog-centered" role="document">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <h3 class="modal-title" id="modalInscreverLongTitle">Confirmar inscrição no plantão.</h3>
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+		          <span aria-hidden="true">&times;</span>
+		        </button>
+		      </div>
+		      <div class="modal-body">
+		        Deseja confirmar cadastro no plantão?
+		      </div>
+		      <div class="modal-footer">
+		      	<button type="button" class="btn btn-success">Confirmar</button>
+		        <button type="button" class="btn btn-warning" data-dismiss="modal">Cancelar</button>		        
+		      </div>
+		    </div>
+		  </div>
+		</div>
+
+
+
+
+	<!-- MODAL CADASTRAR PLANTAO -->
 
 		<div class="modal fade" id="modalPlantao" tabindex="-1" role="dialog" aria-labelledby="cadastrarPlantao" aria-hidden="true">
 		  <div class="modal-dialog" role="document">

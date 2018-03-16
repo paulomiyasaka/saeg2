@@ -192,7 +192,9 @@ class plantao extends acao{
 			    if($motorista){
 			    	echo "<h4 class=\"card-subtitle mb-2 alert alert-primary\" role=\"alert\">".$motorista."</h4><hr>";
 			    }
-			echo "<a href=\"#\" class=\"btn btn-primary card-link text-center\">Inscrever-se</a>
+			    //echo "<a href=\"#\" class=\"btn btn-primary card-link text-center\">Inscrever-se</a>";
+			echo "<button type=\"button\" class=\"btn btn-primary card-link text-center\" data-toggle=\"modal\" data-target=\"#modalInscrever\">Inscrever-se</button>
+			
 			    <button type=\"button\" class=\"btn btn-secundary card-link\">Vagas Disponíveis: <span class=\"badge badge-light\">". $this->contarVagas($id_plantao) ."</span></button>
 			  </div>
 			</div>
@@ -243,13 +245,29 @@ class plantao extends acao{
 	//botao cadastrar - deve ser apresentado somente para os administradores do sistema
 	public function botaoCadastrarPlantao(){
 
-		echo "<div class=\"row justify-content-md-center\">
-				<div class=\"col-10 text-center\">
-					<h4>Clique no botão abaixo para cadastrar um novo plantão.</h4><br>
-					<button type=\"button\" class=\"btn btn-outline-warning border-warning\" data-toggle=\"modal\" data-target=\"#modalPlantao\">Cadastrar Plantão</button>
+		if(isset($_SESSION['matricula'])){
+			$sql = "SELECT id_colaborador FROM colaboradores WHERE matricula = :matricula";
+			$dados = array('matricula' => $_SESSION['matricula']);
+			$query = conecta::executarSQL($sql, $dados);
+			$vagas = $query->fetchAll(PDO::FETCH_OBJ);
+			
+			//MOSTRAR SOMENTE SE FOR ADMINISTRADOR
 
-				</div>
-			</div>";
+			$adm = $query->rowCount();
+
+			if($adm){
+				echo "<div class=\"row justify-content-md-center\">
+					<div class=\"col-10 text-center\">
+						<h4>Clique no botão abaixo para cadastrar um novo plantão.</h4><br>
+						<button type=\"button\" class=\"btn btn-outline-info border-info\" data-toggle=\"modal\" data-target=\"#modalPlantao\">Cadastrar Plantão</button>
+
+					</div>
+					</div>";
+
+			}
+		}
+
+		
 	}
 	
 	

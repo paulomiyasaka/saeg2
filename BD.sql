@@ -63,3 +63,13 @@ CREATE TABLE saegnew.cadastrados (
 		CONSTRAINT fk_id_colaborador FOREIGN KEY (id_colaborador) REFERENCES colaboradores(id_colaborador),
 		CONSTRAINT fk_id_plantao FOREIGN KEY (id_plantao) REFERENCES plantao(id_plantao))
 ENGINE = InnoDB;
+
+
+/* CRIA A TABELA DE ADMINISTRADORES DO SISTEMA*/
+CREATE TABLE saegnew.administrador(
+	id_administrador INT NOT NULL AUTO_INCREMENT,
+	id_colaborador INT NOT NULL,
+	PRIMARY KEY (id_administrador),
+	CONSTRAINT fk_id_colaborador_adm FOREIGN KEY (id_colaborador) REFERENCES colaboradores(id_colaborador)
+)
+ENGINE = InnoDB;
