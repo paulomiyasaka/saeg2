@@ -5,48 +5,46 @@ header("Content-Type: text/html; charset=UTF-8",true);
 
 $acao = "";
 //verifica passagem de acão
-if(isset($_GET['acao'])){
+if(isset($_REQUEST['acao'])){
 
-	$acao = $_GET['acao'];
-	$nome = "";
-	$tipo_trabalho = "";
-	$endereco = "";
-	$tel_gerente = "";
-	$tel_centro = "";
+	$acao = $_REQUEST['acao'];
 	
 	
 	
 	if($acao == "cadastrar"){
 		$unidades = new unidades();
 		
-		if(isset($_GET['nome'])){
-			$unidades->setNome($_GET['nome']);
+		if(isset($_REQUEST['nome'])){
+			$unidades->setNome($_REQUEST['nome']);
 		}		
-		if(isset($_GET['tipo_trabalho'])){
-			$unidades->setTrabalho($_GET['tipo_trabalho']);
+		if(isset($_REQUEST['tipo_trabalho'])){
+			$unidades->setTrabalho($_REQUEST['tipo_trabalho']);
 		}
-		if(isset($_GET['endereco'])){
-			$unidades->setEndereco($_GET['endereco']);
+		if(isset($_REQUEST['endereco'])){
+			$unidades->setEndereco($_REQUEST['endereco']);
 		}
-		if(isset($_GET['gerente'])){
-			$unidades->setGerente($_GET['gerente']);
+		if(isset($_REQUEST['gerente'])){
+			$unidades->setGerente($_REQUEST['gerente']);
 		}
-		if(isset($_GET['matricula'])){
-			$unidades->setMatricula($_GET['matricula']);
+		if(isset($_REQUEST['matricula_gerente'])){
+			$unidades->setMatricula($_REQUEST['matricula_gerente']);
 		}
-		if(isset($_GET['tel_gerente'])){
-			$unidades->setTelGerente($_GET['tel_gerente']);
+		if(isset($_REQUEST['tel_gerente'])){
+			$unidades->setTelGerente($_REQUEST['tel_gerente']);
 		}
-		if(isset($_GET['tel_centro'])){
-			$unidades->setTelCentro($_GET['tel_centro']);
+		if(isset($_REQUEST['tel_gerente2'])){
+			$unidades->setTelGerente2($_REQUEST['tel_gerente2']);
+		}
+		if(isset($_REQUEST['tel_centro'])){
+			$unidades->setTelCentro($_REQUEST['tel_centro']);
 		}
 	
 		$cadastrar = $unidades->cadastrarUnidades();
-		if($cadastrar){
-			echo "CADASTRADO COM SUCESSO";
-		}else{
-			echo "ERRO";
-		}
+
+		
+			//echo "CADASTRADO COM SUCESSO";
+			var_dump(json_encode($cadastrar));
+		
 	}
 	
 	
@@ -54,10 +52,10 @@ if(isset($_GET['acao'])){
 	
 //se não houver parametro unidade apresenta erro
 }else{
-
 	return false;
-
 }
+
+
 
 
 

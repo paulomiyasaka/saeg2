@@ -3,7 +3,7 @@ include_once 'auto_load.class.php';
 new auto_load();
 header("Content-Type: text/html; charset=UTF-8",true);
 
-class plantao extends acao{
+class plantao extends conecta{
 
 	protected $id_unidade, $nome_unidade, $data_inicio, $data_final, $hora_inicio, $hora_final, $vagas, $tipo_trabalho, $motorista;
 	
@@ -76,8 +76,8 @@ class plantao extends acao{
 	
 	//listar unidades disponíveis para cadastrar plantão
 	public function listarUnidadesPlantao(){
-		
-		$unidades = acao::consultarUnidadesPlantao();		
+		$unid = new unidades();
+		$unidades = $unid->consultarUnidades();		
 		$quant = count($unidades);
 		$i = 0;
 		
@@ -112,17 +112,24 @@ class plantao extends acao{
 		$turno_final = $dataFinalConverter ." ". $horaFinalConverter;
 		$turno_final = date("Y-m-d H:i:s", strtotime($turno_final));
 		
-		$vagas = (int) $this->getVagas();		
+		$vagas = (int) $this->getVagas();	
+		$vagas = (int) $this->getMotorista();		
 				
-		$sql = "INSERT INTO plantao (id_unidade, turno_inicio, turno_final, vagas) VALUES (:id_unidade, :turno_inicio, :turno_final, :vagas)";
-		$dados = array(':id_unidade' => $id_unidade, ':turno_inicio' => $turno_inicio, ':turno_final' => $turno_final, ':vagas' => $vagas);
+		$sql = "INSERT INTO plantao (id_unidade, turno_inicio, turno_final, vagas,motorista) VALUES (:id_unidade, :turno_inicio, :turno_final, :vagas, :motorista)";
+		$dados = array(':id_unidade' => $id_unidade, ':turno_inicio' => $turno_inicio, ':turno_final' => $turno_final, ':vagas' => $vagas, ':motorista' => $motorista);
 		
-		$cadastrar = acao::cadastrar($sql, $dados);
-		if($cadastrar){
-			return $cadastrar;
+		//$cadastrar = acao::cadastrar($sql, $dados);
+		$cadastrar = conecta::executarSQL($sql, $dados);
+		$resultado = conecta::lastidSQL();
+		
+		$retorno = "";
+		if($resultado){	
+			$retorno = "{'resultado':'true'}";						
 		}else{
-			return false;
+			$retorno = "{'resultado':'false'}";			
 		}
+
+		return $retorno;
 	
 	}//cadastrar plantão
 
@@ -150,7 +157,7 @@ class plantao extends acao{
 	public function listarPlantao(){
 
 		
-		$sql = "SELECT p.*, u.* FROM plantao as p INNER JOIN unidades as u ON p.id_unidade = u.id_unidade AND p.turno_final > now()";
+		$sql = "SELECT p.*, u.* FROM plantao as p INNER JOIN unidades as u ON p.id_unidade = u.id_unidade AND p.turno_final > now() ORDER BY p.turno_inicio";
 		$dados = array();
 		$query = conecta::executarSQL($sql, $dados);
 		$resultado = $query->fetchAll(PDO::FETCH_OBJ);
@@ -174,6 +181,22 @@ class plantao extends acao{
 			    	$motorista = false;
 			    }
 
+			  echo "<div class=\"row justify-content-md-center\">
+					<div class=\"col-10 align-self-center\">
+					<div class=\"pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center\">
+				      <h1 class=\"display-4\">Plantões Ativos</h1>      
+				    </div>
+					</div>
+					</div>
+					
+					<div class=\"row justify-content-md-center\">
+					<div class=\"col-8 align-self-center\">
+					<p class=\"lead text-center\"><b>Benefícios</b> - Para trabalhos aos sábados ou em trabalho no CTE durante a madrugada, desde que seja jornada dupla, o empregado terá direito a <b>uma folga</b>. Para trabalho aos domingos o empregado terá direito a <b>duas folgas.</b></p>
+					</div>
+					</div>
+					<hr>
+					<br>";
+
 
 			echo "<div class=\"col-4 text-center\" style=\"margin-top: 15px; margin-bottom: 15px;\">
 			<div class=\"card\">
@@ -181,7 +204,8 @@ class plantao extends acao{
 			  	<div class=\"alert alert-secondary\" role=\"alert\">
 			    <h3 class=\"card-title\">".$row->nome." - ".$row->trabalho."</h3>
 			    <h4 class=\"card-subtitle mb-2 text-muted\">".$row->endereco."</h4>
-			    </div><hr>";
+			    </div>			    
+			    <hr>";
 			    
 			    
 
@@ -246,25 +270,40 @@ class plantao extends acao{
 	public function botaoCadastrarPlantao(){
 
 		if(isset($_SESSION['matricula'])){
-			$sql = "SELECT id_colaborador FROM colaboradores WHERE matricula = :matricula";
-			$dados = array('matricula' => $_SESSION['matricula']);
+			$matricula = $_SESSION['matricula'];
+
+			//$sql = "SELECT c.id_colaborador FROM colaboradores AS c LEFT JOIN a.id_aministrador  WHERE c.matricula = :matricula";
+			$sql = "SELECT a.id_administrador, a.id_colaborador FROM administrador AS a LEFT JOIN colaboradores AS c ON a.id_colaborador = c.id_colaborador WHERE c.matricula = :matricula";
+
+			$dados = array(':matricula' => $matricula);
 			$query = conecta::executarSQL($sql, $dados);
 			$vagas = $query->fetchAll(PDO::FETCH_OBJ);
 			
 			//MOSTRAR SOMENTE SE FOR ADMINISTRADOR
 
 			$adm = $query->rowCount();
-
+			
 			if($adm){
 				echo "<div class=\"row justify-content-md-center\">
 					<div class=\"col-10 text-center\">
-						<h4>Clique no botão abaixo para cadastrar um novo plantão.</h4><br>
+					<h4>Clique no botão abaixo para cadastrar um novo plantão ou uma unidade.</h4><br>
+					</div>
+					</div>
+
+					<div class=\"row justify-content-md-center\">
+					<div class=\"col-5 text-center\">						
 						<button type=\"button\" class=\"btn btn-outline-info border-info\" data-toggle=\"modal\" data-target=\"#modalPlantao\">Cadastrar Plantão</button>
+
+					</div>
+					<div class=\"col-5 text-center\">
+						<button type=\"button\" class=\"btn btn-outline-secundary border-secundary\" data-toggle=\"modal\" data-target=\"#modalUnidade\">Cadastrar Unidade</button>
 
 					</div>
 					</div>";
 
 			}
+		}else{
+			echo "<script> window.location.href='../index.php';</script>";
 		}
 
 		

@@ -14,27 +14,26 @@
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.0/jquery.mask.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>  
   <script src="js/script.js"></script>
-  <script>
-    $(document).ready(){
-      $('#myModal').modal('hide');
-    }
-  </script>
-
+ 
     <!-- Custom styles for this template -->
     <link href="css/signin.css" rel="stylesheet">
   </head>
 
   <body class="text-center">
 
-    <form class="form-signin">
+  <div class="container">
+    <div class="row justify-content-md-center">
+      <div class="col-4">
       <img class="mb-4" src="http://correios.com.br/++theme++correios.site.tema/images/logo_correios.png" alt="Correios" title="SAEG - GEOPE SE/BSB">
       <hr>
       <h2 class="h2 mb-3 font-weight-normal">SAEG</h2>      
       <h3 class="h3 mb-3 font-weight-normal">Sistema de Apoio às Atividades Extras da GEOPE/BSB</h3>
+      <br>
       <hr>
       <label for="matricula_login" class="sr-only">Matrícula</label>
-      <input type="text" id="matricula_login" name="matricula_login" class="form-control" placeholder="Informe a sua Matrícula" required autofocus>
+      <input type="text" id="matricula_login" name="matricula_login" class="form-control text-center" placeholder="Informe a sua Matrícula" required autofocus>
       <hr>
+      
       <div id="myModal" class="modal" tabindex="-1" role="dialog">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -45,7 +44,7 @@
             </button>
           </div>
           <div class="modal-body">
-            <p>A matrícula informada não foi encontrada.</p>
+            <h4 class="text-center">A matrícula informada não foi encontrada.</h4>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-danger" data-dismiss="modal">OK</button>
@@ -57,12 +56,15 @@
       <!--
       <label for="senha" class="sr-only">Senha</label>
       <input type="password" id="senha" class="form-control" placeholder="Senha" required>
-      <button id="btn_entrar" onclick="return logar();" class="btn btn-lg btn-primary btn-block" type="submit">ENTRAR</button>
-      -->
-      <a href="#" onclick="javascript: logar();" class="btn btn-lg btn-primary btn-block">ENTRAR</a>
+      <button id="btn_entrar" onclick="logar();" class="btn btn-lg btn-primary btn-block" type="submit">ENTRAR</button>
       
+      <a href="#" onclick="javascript: logar();" class="btn btn-lg btn-primary btn-block">ENTRAR</a>
+      -->
+      <button id="btn_entrar" onclick="logar();" class="btn btn-lg btn-primary btn-block" type="submit">ENTRAR</button>
       <hr>
       <p class="mt-5 mb-3 text-muted">GEOPE SE/BSB</p>
-    </form>
+    </div>
+  </div>
+</div>
   </body>
 </html>

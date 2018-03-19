@@ -4,7 +4,7 @@ class auto_load{
     
 
         public function __construct() {
-        	set_include_path(get_include_path().PATH_SEPARATOR.DIR_CLASSES);
+        	set_include_path(get_include_path().PATH_SEPARATOR."controle/");
 			spl_autoload_extensions('.class.php');
             spl_autoload_register(array($this, 'loader'));
         }

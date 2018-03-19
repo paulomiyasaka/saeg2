@@ -5,9 +5,9 @@ header("Content-Type: text/html; charset=UTF-8",true);
 
 $acao = "";
 //verifica passagem de acão
-if(isset($_GET['acao'])){
+if(isset($_REQUEST['acao'])){
 
-	$acao = $_GET['acao'];
+	$acao = $_REQUEST['acao'];
 	$id_unidade = "";
 	$data_inicio = "";
 	$hora_inicio = "";
@@ -19,42 +19,51 @@ if(isset($_GET['acao'])){
 	if($acao == "cadastrar"){
 		$plantao = new plantao();
 		
-		if(isset($_GET['id_unidade'])){
-			$plantao->setIdUnidade($_GET['id_unidade']);
+		if(isset($_REQUEST['id_unidade'])){
+			$plantao->setIdUnidade($_REQUEST['id_unidade']);
 		}		
-		if(isset($_GET['data_inicio'])){
-			$plantao->setDataInicio($_GET['data_inicio']);
+		if(isset($_REQUEST['data_inicio'])){
+			$plantao->setDataInicio($_REQUEST['data_inicio']);
 		}
-		if(isset($_GET['hora_inicio'])){
-			$plantao->setHoraInicio($_GET['hora_inicio']);
+		if(isset($_REQUEST['hora_inicio'])){
+			$plantao->setHoraInicio($_REQUEST['hora_inicio']);
 		}
-		if(isset($_GET['data_final'])){
-			$plantao->setDataFinal($_GET['data_final']);
+		if(isset($_REQUEST['data_final'])){
+			$plantao->setDataFinal($_REQUEST['data_final']);
 		}
-		if(isset($_GET['hora_final'])){
-			$plantao->setHoraFinal($_GET['hora_final']);
+		if(isset($_REQUEST['hora_final'])){
+			$plantao->setHoraFinal($_REQUEST['hora_final']);
 		}
-		if(isset($_GET['vagas'])){
-			$plantao->setVagas($_GET['vagas']);
+		if(isset($_REQUEST['vagas'])){
+			$plantao->setVagas($_REQUEST['vagas']);
 		}
-		if(isset($_GET['motorista'])){
-			$plantao->setMotorista($_GET['motorista']);
+		if(isset($_REQUEST['motorista'])){
+			$plantao->setMotorista($_REQUEST['motorista']);
 		}else{
 			$plantao->setMotorista("0");
 		}
 		$m = $plantao->getMotorista();
 		$cadastrar = $plantao->cadastrarPlantao();
-		if($cadastrar){
-			echo "CADASTRADO COM SUCESSO";
-		}else{
-			echo "ERRO";
+		
+		var_dump(json_encode($cadastrar));
+
+
+		//LISTAR PLANTÕES
+	}else if($acao == "listar"){
+
+		$matricula = NULL;
+
+		if(isset($_REQUEST['matricula'])){
+			$matricula = $_REQUEST['matricula']	;
 		}
+		session_start();
+		$_SESSION['matricula'] = $matricula;
+		echo "<script>window.location.href='listar_plantao.php';</script>";
 	}
 	
 	
-	
-	
-//se não houver parametro acao apresenta erro
+
+//se não houver parametro acao apresenta erro	
 }else{
 
 	return false;

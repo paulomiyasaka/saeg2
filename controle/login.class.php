@@ -20,25 +20,15 @@ class login extends conecta{
 
 		$usuario = $this->getMatricula();
 
-		$sql = "SELECT * FROM colaboradores WHERE matricula = :matricula AND status = :status";
+		$sql = "SELECT matricula, nome, lotacao, funcao, telefone FROM colaboradores WHERE matricula = :matricula AND status = :status";
 		$dados = array(":matricula" => $usuario, ":status" => 1);
 
 		$query = conecta::executarSQL($sql, $dados);
-		$resultado = $query->fetchAll(PDO::FETCH_OBJ);
+		$resultado = $query->fetch(PDO::FETCH_OBJ);
 		$quant = $query->rowCount();		
-		if($quant == 1){
-
-			foreach ($resultado as $row) {
-				session_start();
-				$_SESSION['matricula'] = $row->matricula;
-				$_SESSION['nome'] = $row->nome;
-				$_SESSION['lotacao'] = $row->lotacao;
-				$_SESSION['funcao'] = $row->funcao;
-				$_SESSION['time'] = date('Y-m-d H:i:s');
-			}
-									
+		if($quant == 1){					
 			//return $resultado;			
-			return $quant;
+			return $resultado;
 		}else{
 			return false;
 		}

@@ -1,6 +1,10 @@
 ﻿<?php
 include_once '../controle/auto_load.class.php';
 new auto_load();
+header("Content-type: application/json");
+		header("Access-Control-Allow-Origin: *");
+		header("Content-Type: text/html; charset=UTF-8",true);
+		header("Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS");
 		
 	$matricula = NULL;	
 
@@ -13,7 +17,9 @@ new auto_load();
 		$usuario = $login->logar();
 		
 		if($usuario){
-			var_dump($usuario);	
+			$usuario = json_encode($usuario);	
+			var_dump($usuario);
+			//return $usuario;
 		}else{			
 			return false;
 		}		
