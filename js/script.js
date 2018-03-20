@@ -245,7 +245,7 @@ function setStorage(retorno_array){
 
 function logout(){	
 	localStorage.clear();   	
-	window.location.href="logout.php";		
+	window.location.href="sistema/logout.php";		
 }
 
 function verTime(){
@@ -254,8 +254,65 @@ function verTime(){
 		var timeIn = localStorage.getItem("time");
 		var timeNow = new Date();
 		timeNow = timeNow.getTime();
-		if(timeNow - timeIn > 3600000){
+
+		if(timeNow - timeIn > 600000){
 			logout();
+		}else{
+			localStorage.setItem("time", timeNow);
 		}
+
 	}
 }
+
+
+	function idPlantao(id_plantao){
+		
+		$("#inscrever_plantao").attr("id-plantao", id_plantao);
+	}
+
+
+
+
+	function inscreverPlantao(){	
+
+			var id_plantao = $("#inscrever_plantao").attr("id-plantao");
+			var acao = "inscrever";
+
+			$.ajax({url: "sistema/plantao.php", 
+				data: {
+						acao:acao,
+						id_plantao:id_plantao
+					},
+				datatype: 'JSON',
+				type: 'POST',
+
+
+
+			success: function(result,status){
+				//var retorno = '['+ result + ']'; 
+				//var j = '{"dados":' + result + '}';
+
+				var retorno = "["+result+"]";				
+				
+				var retorno_array = retorno.split(',');
+				//alert("retorno = "+retorno + " success = " + status);
+						if (typeof(Storage) !== 'undefined') {
+							
+							if(result != false && status == 'success'){   	 		
+				    		$('#modalCadastroOK').modal('show');
+				    			setStorage(retorno_array);			    						    						    		
+				    			
+
+				    		}else{
+				    			$('#modalCadastroError').modal('show');
+				    		}
+
+						}else {
+		    				alert('Utilize um destes navegadores: Google Chrome ou Mozilla Firefox.');
+						}
+        			},
+
+        });
+
+		
+	}

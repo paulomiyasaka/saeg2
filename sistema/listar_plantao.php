@@ -67,7 +67,7 @@ session_start();
 			$plantao->botaoCadastrarPlantao();
 		?>
 
-	<div class="row justify-content-md-center">
+	
 
 
 		<?php 
@@ -77,7 +77,7 @@ session_start();
 
 		?>
 
-	</div>
+	
 
 
 
@@ -90,16 +90,16 @@ session_start();
 		  <div class="modal-dialog modal-dialog-centered" role="document">
 		    <div class="modal-content">
 		      <div class="modal-header">
-		        <h3 class="modal-title" id="modalInscreverLongTitle">Confirmar inscrição no plantão.</h3>
+		        <h3 class="modal-title" id="modalInscreverLongTitle">Confirmar inscrição</h3>
 		        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
 		          <span aria-hidden="true">&times;</span>
 		        </button>
 		      </div>
 		      <div class="modal-body">
-		        Deseja confirmar cadastro no plantão?
+		        <h3>Deseja confirmar cadastro no plantão?</h3>
 		      </div>
-		      <div class="modal-footer">
-		      	<button type="button" class="btn btn-success">Confirmar</button>
+		      <div class="modal-footer">		      	
+		      	<button id="inscrever_plantao" type="button" class="btn btn-success" onclick="inscreverPlantao();">Confirmar</button>
 		        <button type="button" class="btn btn-warning" data-dismiss="modal">Cancelar</button>		        
 		      </div>
 		    </div>

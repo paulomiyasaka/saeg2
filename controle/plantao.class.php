@@ -182,7 +182,7 @@ class plantao extends conecta{
 			    }
 
 			  echo "<div class=\"row justify-content-md-center\">
-					<div class=\"col-10 align-self-center\">
+					<div class=\"col-sm-12 col-md-8 col-lg-6  align-self-center\">
 					<div class=\"pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center\">
 				      <h1 class=\"display-4\">Plantões Ativos</h1>      
 				    </div>
@@ -190,21 +190,22 @@ class plantao extends conecta{
 					</div>
 					
 					<div class=\"row justify-content-md-center\">
-					<div class=\"col-8 align-self-center\">
-					<p class=\"lead text-center\"><b>Benefícios</b> - Para trabalhos aos sábados ou em trabalho no CTE durante a madrugada, desde que seja jornada dupla, o empregado terá direito a <b>uma folga</b>. Para trabalho aos domingos o empregado terá direito a <b>duas folgas.</b></p>
+					<div class=\"col-sm-12 col-md-8 col-lg-6  align-self-center\">
+					<p class=\"lead text-justify\"><b>Benefícios</b> - Para trabalhos aos sábados ou em trabalho no CTE durante a madrugada, desde que seja jornada dupla, o empregado terá direito a <b>uma folga</b>. Para trabalho aos domingos o empregado terá direito a <b>duas folgas.</b></p>
 					</div>
 					</div>
 					<hr>
 					<br>";
 
 
-			echo "<div class=\"col-4 text-center\" style=\"margin-top: 15px; margin-bottom: 15px;\">
+			echo "<div class=\"row justify-content-md-center\">
+			<div class=\"col-sm-12 col-md-6 col-lg-4 text-center\" style=\"margin-top: 15px; margin-bottom: 15px;\">
 			<div class=\"card\">
 			  <div class=\"card-body border border-dark\">
 			  	<div class=\"alert alert-secondary\" role=\"alert\">
 			    <h3 class=\"card-title\">".$row->nome." - ".$row->trabalho."</h3>
 			    <h4 class=\"card-subtitle mb-2 text-muted\">".$row->endereco."</h4>
-			    </div>			    
+			    </div>			    			    
 			    <hr>";
 			    
 			    
@@ -217,12 +218,25 @@ class plantao extends conecta{
 			    	echo "<h4 class=\"card-subtitle mb-2 alert alert-primary\" role=\"alert\">".$motorista."</h4><hr>";
 			    }
 			    //echo "<a href=\"#\" class=\"btn btn-primary card-link text-center\">Inscrever-se</a>";
-			echo "<button type=\"button\" class=\"btn btn-primary card-link text-center\" data-toggle=\"modal\" data-target=\"#modalInscrever\">Inscrever-se</button>
+			echo "<button id-plantao=\"".$row->id_plantao."\" type=\"button\" class=\"btn btn-primary card-link text-center\" data-toggle=\"modal\" data-target=\"#modalInscrever\" onclick=\"idPlantao(".$row->id_plantao.");\">Inscrever-se</button>";
 			
-			    <button type=\"button\" class=\"btn btn-secundary card-link\">Vagas Disponíveis: <span class=\"badge badge-light\">". $this->contarVagas($id_plantao) ."</span></button>
-			  </div>
-			</div>
-			</div>";
+
+			if(isset($_SESSION['matricula'])){
+				$matricula = $_SESSION['matricula'];
+				$adm = $this->verificarAdministrador($matricula);
+				if($adm){
+					 echo "<button type=\"button\" class=\"btn btn-info card-link\">Vagas Disponíveis: <span class=\"badge badge-light\">". $this->contarVagas($id_plantao) ."</span></button>";
+				}else{
+					 echo "<button type=\"button\" class=\"btn btn-secundary card-link\">Vagas Disponíveis: <span class=\"badge badge-light\">". $this->contarVagas($id_plantao) ."</span></button>";
+				}
+			}
+			
+			  echo "</div>
+			  		</div>
+					</div>
+					</div>
+					<hr>
+					<br>";
 
 			$i++;
 			
@@ -266,6 +280,26 @@ class plantao extends conecta{
 		return $quant . " / " . $vagas;
 	}
 
+	//verificar se é administrador
+	public function verificarAdministrador($matricula){
+		$sql = "SELECT a.id_administrador, a.id_colaborador FROM administrador AS a LEFT JOIN colaboradores AS c ON a.id_colaborador = c.id_colaborador WHERE c.matricula = :matricula";
+
+			$dados = array(':matricula' => $matricula);
+			$query = conecta::executarSQL($sql, $dados);
+			//$resultado = $query->fetchAll(PDO::FETCH_OBJ);		
+
+			$result = $query->rowCount();
+			if($result){
+				$result = true;
+			}else{
+				$result = false;
+			}
+
+			return $result;
+	}
+
+
+
 	//botao cadastrar - deve ser apresentado somente para os administradores do sistema
 	public function botaoCadastrarPlantao(){
 
@@ -273,30 +307,22 @@ class plantao extends conecta{
 			$matricula = $_SESSION['matricula'];
 
 			//$sql = "SELECT c.id_colaborador FROM colaboradores AS c LEFT JOIN a.id_aministrador  WHERE c.matricula = :matricula";
-			$sql = "SELECT a.id_administrador, a.id_colaborador FROM administrador AS a LEFT JOIN colaboradores AS c ON a.id_colaborador = c.id_colaborador WHERE c.matricula = :matricula";
-
-			$dados = array(':matricula' => $matricula);
-			$query = conecta::executarSQL($sql, $dados);
-			$vagas = $query->fetchAll(PDO::FETCH_OBJ);
-			
-			//MOSTRAR SOMENTE SE FOR ADMINISTRADOR
-
-			$adm = $query->rowCount();
+			$adm = $this->verificarAdministrador($matricula);
 			
 			if($adm){
 				echo "<div class=\"row justify-content-md-center\">
-					<div class=\"col-10 text-center\">
+					<div class=\"col-8  text-center\">
 					<h4>Clique no botão abaixo para cadastrar um novo plantão ou uma unidade.</h4><br>
 					</div>
 					</div>
 
-					<div class=\"row justify-content-md-center\">
+					<div class=\"row justify-content-around\">
 					<div class=\"col-5 text-center\">						
 						<button type=\"button\" class=\"btn btn-outline-info border-info\" data-toggle=\"modal\" data-target=\"#modalPlantao\">Cadastrar Plantão</button>
 
 					</div>
 					<div class=\"col-5 text-center\">
-						<button type=\"button\" class=\"btn btn-outline-secundary border-secundary\" data-toggle=\"modal\" data-target=\"#modalUnidade\">Cadastrar Unidade</button>
+						<button type=\"button\" class=\"btn btn-outline-info border-info\" data-toggle=\"modal\" data-target=\"#modalUnidade\">Cadastrar Unidade</button>
 
 					</div>
 					</div>";
@@ -308,7 +334,11 @@ class plantao extends conecta{
 
 		
 	}
-	
+
+
+
+
+
 	
 	
 

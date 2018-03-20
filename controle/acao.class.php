@@ -35,7 +35,7 @@ class acao extends conecta{
 	//consultar unidades para os plantões
 	protected function consultarUnidadesPlantao(){
 		
-		$sql = "SELECT * FROM unidades";
+		$sql = "SELECT * FROM unidades ORDER BY data_inicial AND hora_inicial ASC";
 		$dados = array();
 		$query = conecta::executarSQL($sql, $dados);
 		$resultado = $query->fetchAll(PDO::FETCH_OBJ);

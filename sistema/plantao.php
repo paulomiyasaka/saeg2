@@ -59,6 +59,26 @@ if(isset($_REQUEST['acao'])){
 		session_start();
 		$_SESSION['matricula'] = $matricula;
 		echo "<script>window.location.href='listar_plantao.php';</script>";
+	
+
+	}else if($acao == "inscrever"){
+
+		$id_plantao = $_REQUEST['id_plantao'];
+		if(isset($_SESSION['matricula'])){
+
+			$sql = "SELECT id_colaborador FROM colaboradores WHERE matricula = :matricula";
+			$dados = array(":matricula"  => $matricula);
+
+			$query = conecta::executarSQL($sql, $dados);
+			$resultado = $query->fetchAll(PDO::FETCH_OBJ);
+			//$quant = conecta::lastidSQL();
+
+		}
+
+
+		var_dump(json_encode($resultado));
+		
+
 	}
 	
 	
