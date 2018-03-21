@@ -3,8 +3,6 @@
 /* CRIA O BANCO DE DADOS */
 CREATE DATABASE saegnew;
 
-
-
 /* CRIA A TABELA UNIDADES */
 CREATE TABLE saegnew.unidades ( 
 	id_unidade INT NOT NULL AUTO_INCREMENT , 
@@ -17,6 +15,7 @@ CREATE TABLE saegnew.unidades (
 	tel_gerente2 VARCHAR(11) DEFAULT NULL , 
 	tel_centro VARCHAR(9) NOT NULL , 
 	status BOOLEAN NOT NULL DEFAULT 1,
+	data TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, 
 	PRIMARY KEY (id_unidade),
 	UNIQUE (nome)) 
 	ENGINE = InnoDB;
@@ -32,6 +31,7 @@ CREATE TABLE saegnew.plantao (
 	vagas INT(4) NOT NULL ,
 	motorista BOOLEAN NOT NULL DEFAULT 0,
 	status BOOLEAN NOT NULL DEFAULT 1 , 
+	data TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, 
 	PRIMARY KEY (id_plantao), 
 	CONSTRAINT fk_id_unidade FOREIGN KEY (id_unidade) REFERENCES unidades(id_unidade))
 	ENGINE = InnoDB;
@@ -47,6 +47,7 @@ CREATE TABLE saegnew.colaboradores (
 	funcao VARCHAR(30) DEFAULT NULL,
 	telefone VARCHAR(9) DEFAULT NULL ,
 	status BOOLEAN NOT NULL DEFAULT 1 , 
+	data TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, 
 	PRIMARY KEY (id_colaborador),
 	UNIQUE (matricula)) 
 	ENGINE = InnoDB;
@@ -60,6 +61,7 @@ CREATE TABLE saegnew.cadastrados (
 		motorista BOOLEAN NOT NULL DEFAULT 0,
 		presenca BOOLEAN DEFAULT NULL,		
 		status BOOLEAN NOT NULL DEFAULT 1,
+		data TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, 
 		PRIMARY KEY (id_cadastrado),
 		CONSTRAINT fk_id_colaborador FOREIGN KEY (id_colaborador) REFERENCES colaboradores(id_colaborador),
 		CONSTRAINT fk_id_plantao FOREIGN KEY (id_plantao) REFERENCES plantao(id_plantao))
@@ -70,7 +72,24 @@ ENGINE = InnoDB;
 CREATE TABLE saegnew.administrador(
 	id_administrador INT NOT NULL AUTO_INCREMENT,
 	id_colaborador INT NOT NULL,
+	status BOOLEAN NOT NULL DEFAULT 1,
+	data TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, 
 	PRIMARY KEY (id_administrador),
 	CONSTRAINT fk_id_colaborador_adm FOREIGN KEY (id_colaborador) REFERENCES colaboradores(id_colaborador)
+)
+ENGINE = InnoDB;
+
+
+/* CRIA A TABELA DE REGISTROS DE INSCRIÇÕES DE
+	USUÁRIOS NOS PLANTÕES QUE FORAM CANCELADAS */
+
+CREATE TABLE saegnew.inscricao_cancelada(
+	id_inscricao_cancelada INT NOT NULL AUTO_INCREMENT,
+	id_cadastrado INT NOT NULL,
+	status BOOLEAN NOT NULL DEFAULT 1,
+	data TIMESTAMP NOT NUL DEFAULT  CURRENT_TIMESTAMP,
+	PRIMARY KEY (id_inscricao_cancelada),
+	CONSTRAINT fk_id_cadastrado FOREIGN KEY (id_cadastrado) REFERENCES cadastrados (id_cadastrado)
+
 )
 ENGINE = InnoDB;
