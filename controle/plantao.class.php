@@ -113,7 +113,7 @@ class plantao extends conecta{
 		$turno_final = date("Y-m-d H:i:s", strtotime($turno_final));
 		
 		$vagas = (int) $this->getVagas();	
-		$vagas = (int) $this->getMotorista();		
+		$motorista = (int) $this->getMotorista();		
 				
 		$sql = "INSERT INTO plantao (id_unidade, turno_inicio, turno_final, vagas,motorista) VALUES (:id_unidade, :turno_inicio, :turno_final, :vagas, :motorista)";
 		$dados = array(':id_unidade' => $id_unidade, ':turno_inicio' => $turno_inicio, ':turno_final' => $turno_final, ':vagas' => $vagas, ':motorista' => $motorista);
@@ -121,7 +121,7 @@ class plantao extends conecta{
 		//$cadastrar = acao::cadastrar($sql, $dados);
 		$cadastrar = conecta::executarSQL($sql, $dados);
 		$resultado = conecta::lastidSQL();
-		
+		echo "<script>alert($resultado)</script>";
 		$retorno = "";
 		if($resultado){	
 			$retorno = "{'resultado':'true'}";						
@@ -157,8 +157,8 @@ class plantao extends conecta{
 	public function listarPlantao(){
 
 		
-		$sql = "SELECT p.*, u.* FROM plantao as p INNER JOIN unidades as u ON p.id_unidade = u.id_unidade AND p.turno_final > now() ORDER BY p.turno_inicio";
-		$dados = array();
+		$sql = "SELECT p.*, u.* FROM plantao as p INNER JOIN unidades as u ON p.id_unidade = u.id_unidade AND p.turno_final > now() WHERE p.status = :status ORDER BY p.turno_inicio";
+		$dados = array(":status" => 1);
 		$query = conecta::executarSQL($sql, $dados);
 		$resultado = $query->fetchAll(PDO::FETCH_OBJ);
 		$quant = $query->rowCount();
@@ -174,13 +174,13 @@ class plantao extends conecta{
 			    $data = $funcoes->montarDataPlantao($row->turno_inicio, $row->turno_final);
 			    $id_plantao = $row->id_plantao;
 			    $motorista = $row->motorista;
-			    
+			    /*
 			    if($motorista){
 			    	$motorista = "Precisará de motoristas";
 			    }else{
 			    	$motorista = false;
 			    }
-
+				*/
 			  echo "<div class=\"row justify-content-md-center\">
 					<div class=\"col-sm-12 col-md-8 col-lg-6  align-self-center\">
 					<div class=\"pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center\">
@@ -214,18 +214,34 @@ class plantao extends conecta{
 			    <h5 class=\"card-text text-left\">Gerente: ".$row->gerente."</h5>
 			    <h5 class=\"card-text text-left\">Telefone: ".$row->tel_gerente."</h5>
 			    <h5 class=\"card-text text-left\">Telefone: ".$row->tel_centro."</h5><hr>";
+			    /*
 			    if($motorista){
 			    	echo "<h4 class=\"card-subtitle mb-2 alert alert-primary\" role=\"alert\">".$motorista."</h4><hr>";
 			    }
+			    */
 			    //echo "<a href=\"#\" class=\"btn btn-primary card-link text-center\">Inscrever-se</a>";
-			echo "<button id-plantao=\"".$row->id_plantao."\" type=\"button\" class=\"btn btn-primary card-link text-center\" data-toggle=\"modal\" data-target=\"#modalInscrever\" onclick=\"idPlantao(".$row->id_plantao.");\">Inscrever-se</button>";
-			
+			//echo "<button id=\"inscrever_plantao\" type=\"button\" class=\"btn btn-primary card-link text-center\" data-toggle=\"modal\" data-target=\"#modalInscrever\" onclick=\"idPlantao(".$row->id_plantao.");\">Inscrever-se</button>";		    
 
 			if(isset($_SESSION['matricula'])){
+
 				$matricula = $_SESSION['matricula'];
-				$adm = $this->verificarAdministrador($matricula);
+
+
+				$id_colaborador = $this->verificarMatricula($matricula);
+
+
+			$cadastrado = $this->verificarCadastroPlantao($id_colaborador, $row->id_plantao);
+			
+
+			if($cadastrado){
+				echo "<button id=\"cancelar_inscrever_plantao\" type=\"button\" class=\"btn btn-danger card-link text-center\" data-toggle=\"modal\" data-target=\"#modalCancelInscrever\" onclick=\"idPlantao(".$row->id_plantao.");\">Cancelar</button>";
+			}else{
+				echo "<button id=\"inscrever_plantao\" type=\"button\" class=\"btn btn-primary card-link text-center\" data-toggle=\"modal\" data-target=\"#modalInscrever\" onclick=\"idPlantao(".$row->id_plantao.");\">Inscrever-se</button>";
+			}
+
+			$adm = $this->verificarAdministrador($matricula);
 				if($adm){
-					 echo "<button type=\"button\" class=\"btn btn-info card-link\">Vagas Disponíveis: <span class=\"badge badge-light\">". $this->contarVagas($id_plantao) ."</span></button>";
+					 echo "<button id=\"btn_inscritos\" type=\"button\" class=\"btn btn-info card-link\" onclick=\"verInscritos(".$id_plantao.");\">Vagas Disponíveis: <span class=\"badge badge-light\">". $this->contarVagas($id_plantao) ."</span></button>";
 				}else{
 					 echo "<button type=\"button\" class=\"btn btn-secundary card-link\">Vagas Disponíveis: <span class=\"badge badge-light\">". $this->contarVagas($id_plantao) ."</span></button>";
 				}
@@ -246,7 +262,7 @@ class plantao extends conecta{
 
 
 		}else{
-			echo "<div class=\"col-10 align-self-center\"><div class=\"pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center\"><h1 class=\"display-4\">Não Há Plantões Ativos</h1></div></div>";
+			echo "<div class=\"col-12 align-self-center\"><div class=\"pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center\"><h1 class=\"display-4\">Não Há Plantões Ativos</h1></div></div>";
 
 		}
 	}//listar plantao
@@ -256,14 +272,14 @@ class plantao extends conecta{
 	//contar vagas disponíveis
 	public function contarVagas($id_plantao){
 		
-		$sql = "SELECT vagas FROM plantao WHERE id_plantao = $id_plantao";
-		$dados = array();
+		$sql = "SELECT vagas FROM plantao WHERE id_plantao = :id_plantao AND status = :status";
+		$dados = array(":id_plantao" => $id_plantao, ":status" => 1);
 		$query = conecta::executarSQL($sql, $dados);
 		$vagas = $query->fetchAll(PDO::FETCH_OBJ);
 
 
-		$sql =  "SELECT COUNT(id_plantao) AS quant FROM cadastrados WHERE id_plantao = $id_plantao";
-		$dados = array();
+		$sql =  "SELECT COUNT(id_plantao) AS quant FROM cadastrados WHERE id_plantao = :id_plantao AND status = :status";
+		$dados = array(":id_plantao" => $id_plantao, ":status" => 1);
 		$query = conecta::executarSQL($sql, $dados);
 		$quant = $query->fetchAll(PDO::FETCH_OBJ);
 		
@@ -277,14 +293,14 @@ class plantao extends conecta{
 			$quant = $row->quant;
 		}
 
-		return $quant . " / " . $vagas;
+		return ($vagas - $quant) . " / " . $vagas;
 	}
 
 	//verificar se é administrador
 	public function verificarAdministrador($matricula){
-		$sql = "SELECT a.id_administrador, a.id_colaborador FROM administrador AS a LEFT JOIN colaboradores AS c ON a.id_colaborador = c.id_colaborador WHERE c.matricula = :matricula";
+		$sql = "SELECT a.id_administrador, a.id_colaborador FROM administrador AS a LEFT JOIN colaboradores AS c ON a.id_colaborador = c.id_colaborador WHERE c.matricula = :matricula AND a.status = :status";
 
-			$dados = array(':matricula' => $matricula);
+			$dados = array(':matricula' => $matricula, ":status" => 1);
 			$query = conecta::executarSQL($sql, $dados);
 			//$resultado = $query->fetchAll(PDO::FETCH_OBJ);		
 
@@ -298,6 +314,29 @@ class plantao extends conecta{
 			return $result;
 	}
 
+
+//verificar se o colaborador já está cadastrado no plantao
+	public function verificarCadastroPlantao($id_colaborador, $id_plantao){
+
+		$sql = "SELECT id_cadastrado FROM cadastrados WHERE id_plantao = :id_plantao AND id_colaborador = :id_colaborador";
+
+			$dados = array(':id_plantao' => $id_plantao, ':id_colaborador' => $id_colaborador);
+
+			$query = conecta::executarSQL($sql, $dados);
+			$resultado = $query->fetchAll(PDO::FETCH_OBJ);
+			$result = "";		
+			foreach ($resultado as $row) {
+				$result = $row->id_cadastrado;
+			}
+			
+			if($result){
+				$result = true;
+			}else{
+				$result = false;
+			}
+			
+			return $result;
+	}
 
 
 	//botao cadastrar - deve ser apresentado somente para os administradores do sistema
@@ -337,8 +376,135 @@ class plantao extends conecta{
 
 
 
+	public function verificarMatricula($matricula){
+
+		$sql = "SELECT id_colaborador FROM colaboradores WHERE matricula = :matricula AND status = :status";
+			$dados = array(":matricula"  => $matricula, ":status" => 1);
+
+			$query = conecta::executarSQL($sql, $dados);
+			$resultado = $query->fetch(PDO::FETCH_OBJ);
+			$quant = $query->rowCount();
+			if($quant){
+				return (int) $resultado->id_colaborador;
+			}else{
+				return false;
+			}
+
+	}
 
 
+	public function cadastrarInscricao($id_colaborador, $id_plantao, $motorista){
+		
+		$sql = "INSERT INTO cadastrados (id_colaborador, id_plantao, motorista) VALUES (:id_colaborador, :id_plantao, :motorista)";
+			$dados = array(":id_colaborador" => $id_colaborador, ":id_plantao"  => $id_plantao, ":motorista"  => $motorista);
+
+			$cadastro = $this->verificarCadastroPlantao($id_colaborador, $id_plantao);
+
+			if($cadastro != "false"){
+
+				$query = conecta::executarSQL($sql, $dados);
+				$resultado = $query->fetch(PDO::FETCH_OBJ);
+				$quant = conecta::lastidSQL();
+				if($quant){
+					return (int) $quant;
+				}else{
+					return false;
+				}
+
+
+			}else{
+				return false;
+			}
+			
+
+
+	}
+
+
+
+
+	public function motorista($id_plantao){
+
+		$sql = "SELECT motorista FROM plantao WHERE id_plantao = :id_plantao AND status = :status";
+			$dados = array(":id_plantao"  => $id_plantao, ":status" => 1);
+
+			$query = conecta::executarSQL($sql, $dados);
+			$resultado = $query->fetch(PDO::FETCH_OBJ);
+			$quant = $query->rowCount();
+			if($quant){
+				return $resultado;
+			}else{
+				return false;
+			}
+
+
+	}
+
+
+	public function carteiraMotorista(){
+
+		echo "<hr>	
+			<label class=\"custom-control-label\"><h4>Você possui carteira de motorista?</h4></label>
+	  		<br>
+	  		<div class=\"form-check form-check-inline\">
+			  <input class=\"form-check-input\" type=\"radio\" id=\"inlineCheckbox1\" name=\"motor\" value=\"0\" checked>
+			  <label class=\"form-check-label\" for=\"inlineCheckbox1\"> NÃO </label>
+			</div>
+			<div class=\"form-check form-check-inline\">
+			  <input class=\"form-check-input\" type=\"radio\" id=\"inlineCheckbox1\" name=\"motor\" value=\"1\">
+			  <label class=\"form-check-label\" for=\"inlineCheckbox1\"> SIM </label>
+			</div>";
+
+
+
+	}
+
+
+
+	public function cancelarInscricao($id_plantao, $matricula){
+			
+			$id_colaborador = $this->verificarMatricula($matricula);
+
+			$sql = "DELETE FROM cadastrados WHERE id_colaborador = :id_colaborador AND id_plantao = :id_plantao";
+
+			//$sql = "UPDATE cadastrados SET status = :status WHERE id_plantao = :id_plantao AND id_colaborador = :id_colaborador";
+			$dados = array(":id_colaborador" => $id_colaborador, ":id_plantao" => $id_plantao);
+
+			$query = conecta::executarSQL($sql, $dados);
+			//$resultado = $query->fetch();
+			//$quant = conecta::lastidSQL();
+			
+			if($query){
+				return true;
+			}else{
+				return false;
+			}
+
+
+	}
+
+
+
+
+	public function verInscritos($id_plantao){
+
+		$sql = "SELECT cad.id_colaborador, colab.nome, colab.lotacao FROM cadastrados AS cad INNER JOIN colaboradores AS colab ON cad.id_colaborador = colab.id_colaborador WHERE cad.id_plantao = :id_plantao";
+		$dados = array(":id_plantao" => $id_plantao);
+
+		$query = conecta::executarSQL($sql, $dados);
+		$resultado = $query->fetchAll(PDO::FETCH_OBJ);
+		$quant = $query->rowCount();
+			
+		if($quant > 0){
+			return $resultado;
+
+		}else{
+			return false;
+		}
+
+		
+
+	}
 	
 	
 

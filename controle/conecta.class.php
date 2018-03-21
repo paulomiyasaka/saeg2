@@ -126,7 +126,7 @@
 		}
 
 		protected function lastidSQL(){
-			return (int)$this->conexao->lastInsertId();
+			return (int) $this->conexao->lastInsertId();
 		}
 
 
