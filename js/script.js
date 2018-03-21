@@ -14,6 +14,7 @@ $(document).ready(function(){
 	if (typeof(Storage) !== 'undefined') {
 	    // Store
 	    $("#nome_usuario").prepend(localStorage.getItem('nome'));
+
 	    					    
 	} else {
 	    alert('Utilize um destes navegadores: Google Chrome ou Mozilla Firefox');
@@ -245,7 +246,7 @@ function setStorage(retorno_array){
 
 function logout(){	
 	localStorage.clear();   	
-	window.location.href="sistema/logout.php";		
+	window.location.href="logout.php";		
 }
 
 function verTime(){
@@ -268,6 +269,45 @@ function verTime(){
 	function idPlantao(id_plantao){
 		
 		$("#inscrever_plantao").attr("id-plantao", id_plantao);
+
+		$.ajax({url: "plantao.php", 
+				data: {
+						acao:'verificar',
+						id_plantao:id_plantao
+					},
+				datatype: 'JSON',
+				type: 'POST',
+
+				success: function(result,status){
+				var retorno = '['+ result + ']'; 
+				//var j = '{"dados":' + result + '}';
+
+				var r = retorno.split(':');			    		
+				var resultado = r[1];
+				var tamanho = resultado.length;
+
+				resultado = resultado.replace(resultado.substring(0,1),"");
+				
+				tamanho = resultado.length;
+				resultado = resultado.replace(resultado.substring(tamanho-6,tamanho),"");
+				
+				if(resultado == 'true' && status == 'success'){   	 		
+	    		
+	    			$("#radio-motorista").show();
+
+	    		}else{
+	    			$("#radio-motorista").hide();
+	    		}
+
+
+
+        			},
+
+        });
+
+
+
+
 	}
 
 
@@ -276,9 +316,69 @@ function verTime(){
 	function inscreverPlantao(){	
 
 			var id_plantao = $("#inscrever_plantao").attr("id-plantao");
-			var acao = "inscrever";
+			var acao = "inscrever";			
+			var motorista = $( "input[type=radio][name=motor]:checked" ).val();
+			//alert(motorista);
+			
+			if(motorista == null || motorista == ""){
+				motorista = 0;
+			}
+			
+			
 
-			$.ajax({url: "sistema/plantao.php", 
+			$.ajax({url: "plantao.php", 
+				data: {
+						acao:acao,
+						id_plantao:id_plantao,
+						motorista:motorista
+					},
+				datatype: 'JSON',
+				type: 'POST',
+
+				success: function(result,status){
+				//var retorno = '['+ result + ']'; 
+				//var j = '{"dados":' + result + '}';
+
+				//var retorno = "["+result+"]";				
+				
+				//var retorno_array = retorno.split(',');
+				//alert(retorno_array);
+				alert("retorno = "+result + " success = " + status)
+							
+							if(result != "false" && status == 'success'){ 
+							
+							$("#modalInscrever").modal('hide'); 	 		
+				    		$('#modalCadastroOK').modal('show');
+				    		window.location.reload();	
+				    			
+
+				    		}else{
+
+				    			$("#modalInscrever").modal('hide'); 
+				    			$('#modalCadastroError').modal('show');
+				    		}
+
+        			},
+
+        });
+
+		
+	}
+
+
+
+
+
+function cancelarInscreverPlantao(){	
+
+			var id_plantao = $("#inscrever_plantao").attr("id-plantao");
+			var acao = "cancelar";
+			var motorista = $("#motorista").val();
+			if(motorista == null || motorista == ""){
+				motorista = 0;
+			}
+
+			$.ajax({url: "plantao.php", 
 				data: {
 						acao:acao,
 						id_plantao:id_plantao
@@ -286,33 +386,100 @@ function verTime(){
 				datatype: 'JSON',
 				type: 'POST',
 
-
-
-			success: function(result,status){
+				success: function(result,status){
 				//var retorno = '['+ result + ']'; 
 				//var j = '{"dados":' + result + '}';
 
 				var retorno = "["+result+"]";				
 				
 				var retorno_array = retorno.split(',');
-				//alert("retorno = "+retorno + " success = " + status);
-						if (typeof(Storage) !== 'undefined') {
+				
+				//alert("retorno = "+retorno + " success = " + status)
 							
-							if(result != false && status == 'success'){   	 		
-				    		$('#modalCadastroOK').modal('show');
-				    			setStorage(retorno_array);			    						    						    		
+							if(result != false && status == 'success'){ 
+							
+							$("#modalCancelInscrever").modal('hide'); 
+							//$('#modalCadastroOK').modal('show');
+				    		window.location.reload();	
 				    			
 
 				    		}else{
+
+				    			$("#modalCancelInscrever").modal('hide'); 
 				    			$('#modalCadastroError').modal('show');
 				    		}
 
-						}else {
-		    				alert('Utilize um destes navegadores: Google Chrome ou Mozilla Firefox.');
-						}
         			},
 
         });
 
 		
 	}
+
+
+
+
+	function verInscritos(id_plantao){
+
+		$.ajax({url: "plantao.php", 
+				data: {
+						acao:"listar_inscritos",
+						id_plantao:id_plantao
+					},
+				datatype: 'JSON',
+				type: 'POST',
+
+				success: function(result,status){
+				//var retorno = '['+ result + ']'; 
+				//var j = '{"dados":' + result + '}';
+
+				//var retorno = "["+result+"]";				
+				
+				var retorno_array = result.split(',');
+
+				//alert(retorno_array.length);
+				
+				//alert("retorno = "+retorno + " success = " + status)
+							
+							if(retorno_array != "false" && status == 'success'){ 
+
+								$('#modalInscritos').modal('show').on('shown.bs.modal', function (e) {
+								 	//listarInscritos(retorno_array);
+								 	var tamanho = retorno_array.length;		
+								 	var linha = 0;			
+
+								 	//$("<tbody>").appendTo("thead");
+								 		$("<tr nomes=\"\"><th scope=\"row\" class=\"h5 text-center\">"+retorno_array[0]+"</th><td class=\"h5 text-center\">"+retorno_array[1]+"</td><td class=\"h5 text-center\">"+retorno_array[2]+"</td></tr>").appendTo("tbody");
+								 		
+								 		
+								 	
+								 	
+								});
+
+								$('#modalInscritos').on('hide.bs.modal', function (e) {
+				    				//$("tbody tr").remove();
+
+
+				    			});
+				    			
+								
+
+				    		}else{
+				    			
+
+
+				    			
+				    		
+				    		}
+
+        			},
+
+        });
+
+	}
+
+function imprimirInscritos(){
+
+
+
+}
