@@ -97,7 +97,26 @@ session_start();
 		      </div>
 		      <div class="modal-body">
 		        <h3>Deseja confirmar cadastro no plantão?</h3>
-		      </div>
+	  
+		        	<hr>	        	
+
+			  		<label class="custom-control-label"><h4>Você possui carteira de motorista?</h4></label>
+			  		<br>
+			  		<div class="form-check form-check-inline">
+					  <input class="form-check-input" type="radio" id="inlineCheckbox1" name="motor" value="0" checked>
+					  <label class="form-check-label" for="inlineCheckbox1"> NÃO </label>
+					</div>
+					<div class="form-check form-check-inline">
+					  <input class="form-check-input" type="radio" id="inlineCheckbox1" name="motor" value="1">
+					  <label class="form-check-label" for="inlineCheckbox1"> SIM </label>
+					</div>
+			  			
+				</div>
+
+
+		
+
+		        
 		      <div class="modal-footer">		      	
 		      	<button id="inscrever_plantao" type="button" class="btn btn-success" onclick="inscreverPlantao();">Confirmar</button>
 		        <button type="button" class="btn btn-warning" data-dismiss="modal">Cancelar</button>		        
@@ -105,6 +124,80 @@ session_start();
 		    </div>
 		  </div>
 		</div>
+
+		<div class="modal fade" id="modalCancelInscrever" tabindex="-1" role="dialog" aria-labelledby="modalCancelInscreverTitle" aria-hidden="true">
+		  <div class="modal-dialog modal-dialog-centered" role="document">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <h3 class="modal-title" id="modalCancelInscreverLongTitle">Confirmar cancelamento</h3>
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+		          <span aria-hidden="true">&times;</span>
+		        </button>
+		      </div>
+		      <div class="modal-body">
+		        <h3>Deseja confirmar o cancelamento da inscrição neste plantão?</h3>
+		      </div>
+		      <div class="modal-footer">		      	
+		      	<button id="cancelar_inscrever_plantao" type="button" class="btn btn-success" onclick="cancelarInscreverPlantao();">Confirmar</button>
+		        <button type="button" class="btn btn-warning" data-dismiss="modal">Cancelar</button>		        
+		      </div>
+		    </div>
+		  </div>
+		</div>
+
+				<!-- Modal -->
+		<div class="modal fade" id="modalInscritos" tabindex="-1" role="dialog" aria-labelledby="modalInscritosLongTitle" aria-hidden="true">
+		  <div class="modal-dialog modal-lg" role="document">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <h3 class="modal-title" id="modalInscritosLongTitle">Inscritos no plantão:</h3>
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+		          <span aria-hidden="true">&times;</span>
+		        </button>
+		      </div>
+
+		      <div class="modal-body">
+		       
+		      		<table class="table">
+					  <thead>
+					    <tr>
+					      <th scope="col" class="text-center">#</th>
+					      <th scope="col" class="text-center">Nome</th>
+					      <th scope="col" class="text-center">Lotação</th>
+					    </tr>
+					  </thead>
+					  <tbody id="tbody-table">
+					  	<!--
+					    <tr>
+					      <th scope="row">1</th>
+					      <td>Mark</td>
+					      <td>Otto</td>
+					    </tr>
+					    <tr>
+					      <th scope="row">2</th>
+					      <td>Jacob</td>
+					      <td>Thornton</td>
+					    </tr>
+					    <tr>
+					      <th scope="row">3</th>
+					      <td>Larry</td>
+					      <td>the Bird</td>
+					    </tr>
+					-->
+					  </tbody>
+					</table>
+
+		      </div>
+
+		      <div class="modal-footer">
+		        <button id="btn_imprimir" type="button" class="btn btn-primary" onclick="imprimirInscritos();">Imprimir</button>
+		        <button type="button" class="btn btn-warning" data-dismiss="modal">Cancelar</button>	
+		      </div>
+		    </div>
+		  </div>
+		</div>
+
+
 
 		<!-- MODAL CADASTRAR UNIDADE -->
 
@@ -179,8 +272,8 @@ session_start();
       <div class="modal-dialog" role="document">
         <div class="modal-content">
 <div id="cadastroOK" class="alert alert-success" role="alert">
-  <h4 class="alert-heading text-center">Sucesso!</h4>
-  <p>O cadastro foi realizado.</p>
+  <h2 class="alert-heading text-center">Sucesso!</h2>
+  <h4>Registro efetuado com sucesso.</h4>
 </div>
 </div>
 </div>
@@ -191,8 +284,8 @@ session_start();
       <div class="modal-dialog" role="document">
         <div class="modal-content">
 <div id="cadastroError" class="alert alert-danger" role="alert">
-  <h4 class="alert-heading text-center">Erro!</h4>
-  <p>Algo deu errado ao tentar efetuar o cadastro. Verifique os seus dados e tente novamente!</p>
+  <h2 class="alert-heading text-center">Erro!</h2>
+  <h4>Algo deu errado ao tentar efetuar o cadastro.<br>Verifique os seus dados e tente novamente!</h4>
 </div>
 </div>
 </div>

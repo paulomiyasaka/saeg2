@@ -61,23 +61,91 @@ if(isset($_REQUEST['acao'])){
 		echo "<script>window.location.href='listar_plantao.php';</script>";
 	
 
+
+
+
 	}else if($acao == "inscrever"){
 
-		$id_plantao = $_REQUEST['id_plantao'];
-		if(isset($_SESSION['matricula'])){
+		$id_plantao = $_REQUEST["id_plantao"];
+		$motorista = $_REQUEST["motorista"];
+		
+		session_start();
+		if(isset($_SESSION["matricula"])){
+			$matricula = $_SESSION['matricula'];			
 
-			$sql = "SELECT id_colaborador FROM colaboradores WHERE matricula = :matricula";
-			$dados = array(":matricula"  => $matricula);
+			$plantao = new plantao();
+			$id_colaborador = $plantao->verificarMatricula($matricula);
 
-			$query = conecta::executarSQL($sql, $dados);
-			$resultado = $query->fetchAll(PDO::FETCH_OBJ);
-			//$quant = conecta::lastidSQL();
+			if($id_colaborador != false){
+				$resultado = $plantao->cadastrarInscricao($id_colaborador, $id_plantao, $motorista);
+				
+					var_dump(json_encode($resultado));
+				
+
+			}
+			
+			
 
 		}
 
 
-		var_dump(json_encode($resultado));
 		
+	}else if($acao == "cancelar"){
+
+		$id_plantao = $_REQUEST["id_plantao"];
+		session_start();
+
+		if(isset($_SESSION["matricula"])){
+			$matricula = $_SESSION['matricula'];
+
+			$plantao = new plantao();
+			$resultado = $plantao->cancelarInscricao($id_plantao, $matricula);
+
+			if($resultado != false){
+				
+				var_dump(json_encode($resultado));
+			
+		}
+
+
+	}
+		
+
+
+
+
+	}else if($acao == "verificar"){
+
+		$id_plantao = $_REQUEST["id_plantao"];
+		$plantao = new plantao();
+		$motorista = $plantao->motorista($id_plantao);
+
+		$retorno = "";
+		if($motorista){	
+			$retorno = "{'resultado':'true'}";						
+		}else{
+			$retorno = "{'resultado':'false'}";			
+		}
+
+		var_dump(json_encode($retorno));
+
+
+
+	}else if($acao == "listar_inscritos"){
+
+		$id_plantao = $_REQUEST["id_plantao"];
+		$plantao = new plantao();
+		$lista = $plantao->verInscritos($id_plantao);
+
+
+		$retorno = "";
+		if($lista){	
+			$retorno = $lista;						
+		}else{
+			$retorno = "{'resultado':'false'}";			
+		}
+
+		var_dump(json_encode($retorno));
 
 	}
 	
