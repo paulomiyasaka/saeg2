@@ -1,5 +1,7 @@
 $(document).ready(function(){
 	
+	$('[data-toggle="tooltip"]').tooltip();
+
 	verTime();
 
 	$('#myModal').modal('hide');
@@ -28,6 +30,8 @@ $(document).ready(function(){
 
 	
 });//ready()
+
+
 
 function cadastrarUnidade(){
 
@@ -71,7 +75,7 @@ function cadastrarUnidade(){
 				
 				tamanho = resultado.length;
 				resultado = resultado.replace(resultado.substring(tamanho-6,tamanho),"");
-				alert("resultado = "+resultado);
+				//alert("resultado = "+resultado);
 				if(resultado == 'true' && status == 'success'){   	 		
 	    		
 	    			$("#modalCadastroOK").modal('show').on('hidden.bs.modal', function (e) {
@@ -343,7 +347,7 @@ function verTime(){
 				
 				//var retorno_array = retorno.split(',');
 				//alert(retorno_array);
-				alert("retorno = "+result + " success = " + status)
+				//alert("retorno = "+result + " success = " + status)
 							
 							if(result != "false" && status == 'success'){ 
 							
@@ -435,7 +439,7 @@ function cancelarInscreverPlantao(){
 
 				//var retorno = "["+result+"]";				
 				
-				var retorno_array = result.split(',');
+				var retorno_array = result.split('},{');
 
 				//alert(retorno_array.length);
 				
@@ -445,22 +449,38 @@ function cancelarInscreverPlantao(){
 
 								$('#modalInscritos').modal('show').on('shown.bs.modal', function (e) {
 								 	//listarInscritos(retorno_array);
-								 	var tamanho = retorno_array.length;		
-								 	var linha = 0;			
+								 	$("table > tbody").empty();
+								 	//var tamanho = (retorno_array.length)/3;		
+									var tamanho = retorno_array.length/3;
+								 	var linha = 0;		
+								 	var i = 0;
+								 	//alert(retorno_array);
+								 	if(tamanho > 0){
 
-								 	//$("<tbody>").appendTo("thead");
-								 		$("<tr nomes=\"\"><th scope=\"row\" class=\"h5 text-center\">"+retorno_array[0]+"</th><td class=\"h5 text-center\">"+retorno_array[1]+"</td><td class=\"h5 text-center\">"+retorno_array[2]+"</td></tr>").appendTo("tbody");
+								 		while(linha < tamanho){
+								 			
+								 			while(i < tamanho*3){
+								 				//retorno_array[i] = retorno_array.split(',');
+								 				alert(retorno_array);
+								 				//retorno_array[i+1] = retorno_array.split(':');
+								 				//retorno_array[i+2] = retorno_array.split(':');
+								 				//alert(retorno_array);
+								 				$("<tr><th scope=\"row\" class=\"h5 text-center\">"+retorno_array[i]+"</th><td class=\"h5 text-center\">"+retorno_array[i+1]+"</td><td class=\"h5 text-center\">"+retorno_array[i+2]+"</td></tr>").appendTo("tbody");
+								 				i  += 3;
+								 			}
+								 			
+								 			linha++;
+								 			
+								 		}
+								 	}
+
 								 		
-								 		
+								 									 		
 								 	
 								 	
 								});
 
-								$('#modalInscritos').on('hide.bs.modal', function (e) {
-				    				//$("tbody tr").remove();
-
-
-				    			});
+								
 				    			
 								
 
@@ -468,7 +488,7 @@ function cancelarInscreverPlantao(){
 				    			
 
 
-				    			
+				    			$('#modalCadastroError').modal('show');
 				    		
 				    		}
 

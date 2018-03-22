@@ -21,6 +21,7 @@ session_start();
 	<!-- Java Scritps -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.0/jquery.mask.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>  
 	<script src="../js/script.js"></script>
 	<script>
@@ -100,7 +101,7 @@ session_start();
 	  
 		        	<hr>	        	
 
-			  		<label class="custom-control-label"><h4>Você possui carteira de motorista?</h4></label>
+			  		<label class="custom-control-label"><h4>Você tem interesse em dirigir veículos dos Correios?</h4></label>
 			  		<br>
 			  		<div class="form-check form-check-inline">
 					  <input class="form-check-input" type="radio" id="inlineCheckbox1" name="motor" value="0" checked>
@@ -166,24 +167,8 @@ session_start();
 					      <th scope="col" class="text-center">Lotação</th>
 					    </tr>
 					  </thead>
-					  <tbody id="tbody-table">
-					  	<!--
-					    <tr>
-					      <th scope="row">1</th>
-					      <td>Mark</td>
-					      <td>Otto</td>
-					    </tr>
-					    <tr>
-					      <th scope="row">2</th>
-					      <td>Jacob</td>
-					      <td>Thornton</td>
-					    </tr>
-					    <tr>
-					      <th scope="row">3</th>
-					      <td>Larry</td>
-					      <td>the Bird</td>
-					    </tr>
-					-->
+					  <tbody>
+					  	
 					  </tbody>
 					</table>
 

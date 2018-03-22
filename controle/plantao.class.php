@@ -167,21 +167,7 @@ class plantao extends conecta{
 			$i = 0;
 			//while($i < $quant){
 
-			foreach ($resultado as $row) {		
-
-
-				$funcoes = new funcoes();
-			    $data = $funcoes->montarDataPlantao($row->turno_inicio, $row->turno_final);
-			    $id_plantao = $row->id_plantao;
-			    $motorista = $row->motorista;
-			    /*
-			    if($motorista){
-			    	$motorista = "Precisará de motoristas";
-			    }else{
-			    	$motorista = false;
-			    }
-				*/
-			  echo "<div class=\"row justify-content-md-center\">
+			 echo "<div class=\"row justify-content-md-center\">
 					<div class=\"col-sm-12 col-md-8 col-lg-6  align-self-center\">
 					<div class=\"pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center\">
 				      <h1 class=\"display-4\">Plantões Ativos</h1>      
@@ -198,9 +184,28 @@ class plantao extends conecta{
 					<br>";
 
 
-			echo "<div class=\"row justify-content-md-center\">
-			<div class=\"col-sm-12 col-md-6 col-lg-4 text-center\" style=\"margin-top: 15px; margin-bottom: 15px;\">
+			echo "<div class=\"row justify-content-md-center\">";
+
+			foreach ($resultado as $row) {		
+
+
+				$funcoes = new funcoes();
+			    $data = $funcoes->montarDataPlantao($row->turno_inicio, $row->turno_final);
+			    $id_plantao = $row->id_plantao;
+			    $motorista = $row->motorista;
+			    /*
+			    if($motorista){
+			    	$motorista = "Precisará de motoristas";
+			    }else{
+			    	$motorista = false;
+			    }
+				*/
+			 
+
+
+			echo "<div class=\"col-sm-12 col-md-6 col-lg-4 text-center\" style=\"margin-top: 15px; margin-bottom: 15px;\">
 			<div class=\"card\">
+
 			  <div class=\"card-body border border-dark\">
 			  	<div class=\"alert alert-secondary\" role=\"alert\">
 			    <h3 class=\"card-title\">".$row->nome." - ".$row->trabalho."</h3>
@@ -213,7 +218,8 @@ class plantao extends conecta{
 			echo "<h4 class=\"card-text text-center\">".$data."</h4><br>
 			    <h5 class=\"card-text text-left\">Gerente: ".$row->gerente."</h5>
 			    <h5 class=\"card-text text-left\">Telefone: ".$row->tel_gerente."</h5>
-			    <h5 class=\"card-text text-left\">Telefone: ".$row->tel_centro."</h5><hr>";
+			    <h5 class=\"card-text text-left\">Telefone: ".$row->tel_centro."</h5>
+			    <hr>";
 			    /*
 			    if($motorista){
 			    	echo "<h4 class=\"card-subtitle mb-2 alert alert-primary\" role=\"alert\">".$motorista."</h4><hr>";
@@ -231,28 +237,48 @@ class plantao extends conecta{
 
 
 			$cadastrado = $this->verificarCadastroPlantao($id_colaborador, $row->id_plantao);
-			
+			$vagas_disponiveis = $this->contarVagas($id_plantao);
+			$vagas_total = $this->vagasDisponiveis($id_plantao);
 
 			if($cadastrado){
+				echo "<span class=\"d-inline-block\" tabindex=\"0\" data-toggle=\"tooltip\" title=\"Cancelar Inscrição\">";
 				echo "<button id=\"cancelar_inscrever_plantao\" type=\"button\" class=\"btn btn-danger card-link text-center\" data-toggle=\"modal\" data-target=\"#modalCancelInscrever\" onclick=\"idPlantao(".$row->id_plantao.");\">Cancelar</button>";
+				echo "</span>";
 			}else{
-				echo "<button id=\"inscrever_plantao\" type=\"button\" class=\"btn btn-primary card-link text-center\" data-toggle=\"modal\" data-target=\"#modalInscrever\" onclick=\"idPlantao(".$row->id_plantao.");\">Inscrever-se</button>";
+				if($vagas_disponiveis){
+					echo "<span class=\"d-inline-block\" tabindex=\"0\" data-toggle=\"tooltip\" title=\"Inscrição\">";
+					echo "<button id=\"inscrever_plantao\" type=\"button\" class=\"btn btn-primary card-link\" onclick=\"idPlantao(".$row->id_plantao.");\" data-toggle=\"modal\" data-target=\"#modalInscrever\">Inscrever-se</button>";
+					echo "</span>";
+				}else{
+					echo "<span class=\"d-inline-block\" tabindex=\"0\" data-toggle=\"tooltip\" title=\"Não há mais vagas disponíveis.\">";
+					echo "<button id=\"inscrever_plantao\" type=\"button\" class=\"btn btn-secundary card-link text-center\" data-toggle=\"modal\" data-target=\"#modalInscrever\" onclick=\"idPlantao(".$row->id_plantao.");\"  style=\"pointer-events: none;\" disabled>Inscrever-se</button>";
+					echo "</span>";
+				}
+				
 			}
+
 
 			$adm = $this->verificarAdministrador($matricula);
 				if($adm){
-					 echo "<button id=\"btn_inscritos\" type=\"button\" class=\"btn btn-info card-link\" onclick=\"verInscritos(".$id_plantao.");\">Vagas Disponíveis: <span class=\"badge badge-light\">". $this->contarVagas($id_plantao) ."</span></button>";
+
+					if($vagas_disponiveis != $vagas_total){
+						
+					 echo "<button id=\"btn_inscritos\" type=\"button\" class=\"btn btn-info card-link\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"Veja a lista de inscritos.\" onclick=\"verInscritos(".$id_plantao.");\">Vagas Disponíveis: <span class=\"badge badge-light\">". $vagas_disponiveis ." / ". $vagas_total ."</span></button>";
+
+					}else{
+						echo "<span class=\"d-inline-block\" tabindex=\"0\" data-toggle=\"tooltip\" title=\"Nenhum inscrito no momento.\">";
+						echo "<button id=\"btn_inscritos\" type=\"button\" class=\"btn btn-secundary card-link\" onclick=\"verInscritos(".$id_plantao.");\" style=\"pointer-events: none;\" disabled>Vagas Disponíveis: <span class=\"badge badge-light\">". $vagas_disponiveis ." / ". $vagas_total ."</span></button>";
+						echo "</span>";
+					}
+
 				}else{
-					 echo "<button type=\"button\" class=\"btn btn-secundary card-link\">Vagas Disponíveis: <span class=\"badge badge-light\">". $this->contarVagas($id_plantao) ."</span></button>";
+					 echo "<button type=\"button\" class=\"btn btn-secundary card-link\">Vagas Disponíveis: <span class=\"badge badge-light\">". $vagas_disponiveis ." / ". $vagas_total ."</span></button>";
 				}
 			}
 			
 			  echo "</div>
-			  		</div>
-					</div>
-					</div>
-					<hr>
-					<br>";
+			  		</div>					
+					</div>";
 
 			$i++;
 			
@@ -260,11 +286,15 @@ class plantao extends conecta{
 
 			}
 
+			
+
 
 		}else{
-			echo "<div class=\"col-12 align-self-center\"><div class=\"pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center\"><h1 class=\"display-4\">Não Há Plantões Ativos</h1></div></div>";
+			echo "<div class=\"col-12 align-self-center\"><div class=\"pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center\"><h1 class=\"display-4\">Não Há Plantões Ativos</h1></div>";
 
 		}
+
+
 	}//listar plantao
 
 
@@ -272,29 +302,41 @@ class plantao extends conecta{
 	//contar vagas disponíveis
 	public function contarVagas($id_plantao){
 		
-		$sql = "SELECT vagas FROM plantao WHERE id_plantao = :id_plantao AND status = :status";
-		$dados = array(":id_plantao" => $id_plantao, ":status" => 1);
-		$query = conecta::executarSQL($sql, $dados);
-		$vagas = $query->fetchAll(PDO::FETCH_OBJ);
-
-
 		$sql =  "SELECT COUNT(id_plantao) AS quant FROM cadastrados WHERE id_plantao = :id_plantao AND status = :status";
 		$dados = array(":id_plantao" => $id_plantao, ":status" => 1);
 		$query = conecta::executarSQL($sql, $dados);
 		$quant = $query->fetchAll(PDO::FETCH_OBJ);
 		
-		foreach ($vagas as $row) {
-
-			$vagas = $row->vagas;
-		}
-
 		foreach ($quant as $row) {
 
 			$quant = $row->quant;
 		}
 
-		return ($vagas - $quant) . " / " . $vagas;
+		$vagas = $this->vagasDisponiveis($id_plantao);
+
+		return (int) ($vagas - $quant);
 	}
+
+
+
+	public function vagasDisponiveis($id_plantao){
+
+		$sql = "SELECT vagas FROM plantao WHERE id_plantao = :id_plantao AND status = :status";
+		$dados = array(":id_plantao" => $id_plantao, ":status" => 1);
+		$query = conecta::executarSQL($sql, $dados);
+		$vagas = $query->fetchAll(PDO::FETCH_OBJ);
+
+		foreach ($vagas as $row) {
+
+			$vagas = $row->vagas;
+		}
+
+		return (int) $vagas;
+
+	}
+
+
+
 
 	//verificar se é administrador
 	public function verificarAdministrador($matricula){
